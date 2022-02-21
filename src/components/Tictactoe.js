@@ -6,6 +6,7 @@ const Tictactoe = () => {
 
     const [gameState, setGameState] = useState(intialState)
     const [playerTurn, setPlayerTurn] = useState(false)
+    const [moveCount, setMoveCount] = useState(0)
     
     function onSquareClick(index) {
         let string = Array.from(gameState)
@@ -15,17 +16,22 @@ const Tictactoe = () => {
         string[index] = playerTurn ? "X" : "O"
         setPlayerTurn(!playerTurn)
         setGameState(string)
+        setMoveCount(moveCount+1)
     }
 
     useEffect(() => {
         const winner = checkWinner();
-        console.log(winner);
         if(winner){
             setTimeout(() => {
-                setGameState(intialState)
+                resetGame()
             }, 1000);
         }
-    },)
+    })
+
+    function resetGame() {
+        setGameState(intialState)
+        setMoveCount(0)
+    }
     
     const checkWinner = () => {
         const lines = [
@@ -46,11 +52,23 @@ const Tictactoe = () => {
         }
         return null;
     }
-    const winner = checkWinner();
+    
+
+    function checkWin() {
+        const winner = checkWinner()
+        if(winner){
+            return `${winner} is winner`
+        }
+        if(moveCount === 9){
+            return 'Match Is Draw'
+        }
+        return 'Tic Tac Toe'
+    }
 
   return (<>
         <div className="app-header">
-         <p className="heading-text">{winner ? `${winner} is winner` : "Tic Tac Toe"}</p>   
+        <p className="heading-text">{checkWin()}</p>
+
          <div className="row jc-center">
             <Squarecomponent className="b-bottom-right" state={gameState[0]} onClick={() => onSquareClick(0)}/>
             <Squarecomponent className="b-bottom-right" state={gameState[1]} onClick={() => onSquareClick(1)}/>
@@ -66,7 +84,7 @@ const Tictactoe = () => {
             <Squarecomponent className="b-right" state={gameState[7]} onClick={() => onSquareClick(7)}/>
             <Squarecomponent state={gameState[8]} onClick={() => onSquareClick(8)}/>
          </div>
-         <button className="clear-button" onClick={() => setGameState(intialState)}>Clear Game</button>
+         <button className="clear-button" onClick={resetGame}>Clear Game</button>
         </div>
     </>
   )
